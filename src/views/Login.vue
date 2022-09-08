@@ -4,6 +4,7 @@ import InputPublico from '../components/InputPublico.vue';
 import iconeLogin from '../assets/imagens/login.svg';
 import iconeSenha from '../assets/imagens/senha.svg';
 import { LoginServices } from '../services/LoginServices';
+import router from '../router';
 
 const loginService = new LoginServices();
 
@@ -33,7 +34,7 @@ export default defineComponent({
                 }
                 this.loading = true;
                 await loginService.login({login: this.login, senha: this.senha});
-
+                router.push({name : 'home'});
             } catch (e : any) {
                 console.log(e);
                 if(e?.response?.data?.erro){
