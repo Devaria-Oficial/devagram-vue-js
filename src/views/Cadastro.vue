@@ -6,6 +6,10 @@ import iconeSenha from '../assets/imagens/senha.svg';
 import iconeUsuario from '../assets/imagens/usuario.svg';
 import iconeAvatar from '../assets/imagens/avatar.svg';
 import InputImagem from '../components/InputImagem.vue';
+import {CadastroServices} from '../services/CadastroServices';
+import router from '../router';
+
+const cadastroServices = new CadastroServices();
 
 export default defineComponent({
     setup() {
@@ -13,7 +17,8 @@ export default defineComponent({
             iconeLogin,
             iconeSenha,
             iconeUsuario,
-            iconeAvatar
+            iconeAvatar,
+            cadastroServices
         }
     },
     data() {
@@ -30,7 +35,32 @@ export default defineComponent({
     methods: {
         async cadastrar() {
             try {
-               
+                this.erro = "";
+                if(!this.nome || !this.nome.trim() ||
+                    !this.email || !this.email.trim() ||
+                    !this.senha || !this.senha.trim() ||
+                    !this.confirmacao || !this.confirmacao.trim()){
+                        return this.erro = "Favor preencher todos o formulário";
+                    }
+                
+                if(this.senha !== this.confirmacao){
+                    return this.erro = "Senha e confirmação não são iguais";
+                }
+
+                this.loading = true;
+
+                const formDataRequisicao = new FormData();
+
+                formDataRequisicao.append('nome', this.nome);
+                formDataRequisicao.append('email', this.email);
+                formDataRequisicao.append('senha', this.senha);
+
+                if(this.imagem.arquivo){
+                    formDataRequisicao.append('file', this.imagem.arquivo);
+                }
+
+                await cadastroServices.cadastrar(formDataRequisicao);
+                router.push({name : 'login', query:{cadastroComSucesso: 'true'}});
             } catch (e : any) {
                 console.log(e);
                 if(e?.response?.data?.erro){
