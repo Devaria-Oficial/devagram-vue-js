@@ -77,7 +77,7 @@ export default defineComponent({
                 :disabled="loading">{{buttonText}}</button>
             <div class="link">
                 <p>Não possui uma conta?</p>
-                <a>Faça seu cadastro agora!</a>
+                <RouterLink to="/cadastro">Faça seu cadastro agora!</RouterLink>
             </div>
         </form>
     </div>

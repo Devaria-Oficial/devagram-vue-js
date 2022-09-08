@@ -2,6 +2,7 @@ import { useAccessTokenStore } from './../stores/accessToken';
 import HomeVue from '@/views/Home.vue'
 import LoginVue from '@/views/Login.vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import CadastroVue from '@/views/Cadastro.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,11 @@ const router = createRouter({
       path: '/',
       name: 'login',
       component: LoginVue
+    },
+    {
+      path: '/cadastro',
+      name: 'cadastro',
+      component: CadastroVue
     }
   ]
 });
