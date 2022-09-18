@@ -9,4 +9,8 @@ export class FeedServices extends HttpApiServices{
     async getFeedPorId(id: String){
         return await this.get('/feed?id='+id);
     }
+
+    async togglCurtir(id : String){
+        return this.put(`/like?id=${id}`);
+    }
 }
