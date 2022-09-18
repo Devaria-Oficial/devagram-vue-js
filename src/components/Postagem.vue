@@ -9,6 +9,7 @@
     import { FeedServices } from '@/services/FeedServices';
 
     const feedServices = new FeedServices();
+    const MAX_DESCRICAO = 90;
     
     export default defineComponent({
     setup(){
@@ -16,6 +17,7 @@
             loggedUserId : localStorage.getItem(`_id`),
             loggedAvatar : localStorage.getItem(`avatar`) ?? '',
             loggedName : localStorage.getItem(`nome`) ?? '',
+            MAX_DESCRICAO
         }
     },
     props: {
@@ -24,7 +26,8 @@
     data(){
         return {
             showComentario : false,
-            comentarioMsg : ''
+            comentarioMsg : '',
+            showDescricaoFull : false
         }
     },
     methods: {
@@ -65,6 +68,9 @@
             }catch(e){
                 console.log(e);
             }
+        },
+        togglDescricaoFull(){
+            this.showDescricaoFull = !this.showDescricaoFull;
         }
     },
     components: { Avatar },
@@ -77,6 +83,12 @@
         },
         obterIconeComentario(){
             return this.showComentario ? imgComentarioAtivo : imgComentario;
+        },
+        exibirDescricao(){
+            if(this.showDescricaoFull){
+                return this.post?.descricao;
+            }
+            return this.post?.descricao?.length > MAX_DESCRICAO ? this.post?.descricao?.substring(0, MAX_DESCRICAO) + '...' : this.post?.descricao;
         }
     }
 });
@@ -107,7 +119,11 @@
             <div class="descricao">
                 <strong>{{post?.usuario?.nome}}</strong>
                 <p>
-                    {{post?.descricao}}
+                    {{exibirDescricao}}
+                    <span v-if="post?.descricao.length > MAX_DESCRICAO && !showDescricaoFull"
+                        @click="togglDescricaoFull" class="mais">
+                        mais
+                    </span>
                 </p>
             </div>
 
