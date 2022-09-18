@@ -21,7 +21,6 @@
     components: { Avatar },
     computed: {
         obterIconeCurtir(){
-            console.log(this.post?.likes.findIndex((e : String) => e === this.loggedUserId) != -1);
             if(this.post?.likes && this.post?.likes.findIndex((e : String) => e === this.loggedUserId) != -1){
                 return imgCurtiu
             }
