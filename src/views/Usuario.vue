@@ -6,16 +6,18 @@ import { FeedServices } from '../services/FeedServices';
 import { UsuarioServices } from '../services/UsuarioServices';
 import Feed from '../components/Feed.vue';
 import router from '@/router';
+import HeaderPerfil from '../components/HeaderPerfil.vue';
 
 const feedServices = new FeedServices();
 const usuarioServices = new UsuarioServices();
 
 export default defineComponent({
-    components: { Header, Footer, Feed },
+    components: { Header, Footer, Feed, HeaderPerfil },
     data() {
         return {
             posts: [],
-            usuario : {} as any,
+            usuario: {} as any,
+            mobile: window.innerWidth <=992,
         }
     },
     async mounted() {
@@ -27,7 +29,7 @@ export default defineComponent({
             const id = this.$route.params?.id as String;
             const usuarioResult = await usuarioServices.buscarDadosPorId(id);
 
-            if(!usuarioResult || !usuarioResult.data){
+            if (!usuarioResult || !usuarioResult.data) {
                 return;
             }
 
@@ -45,11 +47,19 @@ export default defineComponent({
         } catch (e) {
             console.log(e);
         }
+    },
+    computed:{
+        getShowLeft(){
+            return this.mobile ? true : false;
+        }
     }
 });
 </script>
 <template>
     <Header :hide="true" />
+    <HeaderPerfil :usuario="usuario" 
+        :title="usuario?.nome" 
+        :showLeft="getShowLeft" :isLeftIcon="true" :showRight="false" />
     <Feed :posts="posts" :temCabecalho="true" />
     <Footer />
 </template>
