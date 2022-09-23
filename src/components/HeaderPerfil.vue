@@ -75,7 +75,7 @@ export default defineComponent({
                     </div>
                 </div>
 
-                <button :class="{principal: !usuario.segueEsseUsuario}"
+                <button :class="{principal: !usuario?.segueEsseUsuario ?? false}"
                     @click="acaoBotao">{{obterTextoBotaoPrincipal}}</button>
             </div>
         </div>
