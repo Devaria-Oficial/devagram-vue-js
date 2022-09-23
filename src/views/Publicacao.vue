@@ -6,17 +6,19 @@ import HeaderAcoes from '../components/HeaderAcoes.vue';
 import Avatar from '../components/Avatar.vue';
 import {PublicacaoServices} from '../services/PublicacaoServices';
 import router from '@/router';
+import Loading from 'vue3-loading-overlay';
 
 const publicacaoServices = new PublicacaoServices();
 
 export default defineComponent({
-    components: { Header, Footer, HeaderAcoes, Avatar },
+    components: { Header, Footer, HeaderAcoes, Avatar, Loading },
     data() {
         return {
             descricao: '',
             imagem: {} as any,
             mobile: window.innerWidth <= 992,
-            avancar: false
+            avancar: false,
+            loading: false
         }
     },
     computed: {
@@ -69,6 +71,8 @@ export default defineComponent({
                     return;
                 }
 
+                this.loading = true;
+
                 const requisicaoBody = new FormData();
                 if (this.descricao) {
                     requisicaoBody.append('descricao', this.descricao);
@@ -79,6 +83,7 @@ export default defineComponent({
                 }
 
                 await publicacaoServices.publicar(requisicaoBody);
+                this.loading = false;
                 return router.push({name : 'home'});
             } catch (e: any) {
                 if (e?.response?.data?.erro) {
@@ -86,14 +91,16 @@ export default defineComponent({
                 } else {
                     console.log('Não foi possível efetuar a alteração:', e);
                 }
+                this.loading = false;
             }
         }
     }
 });
 </script>
 <template>
+    <Loading :active="loading" :can-cancel="false" color="#5E49FF" :is-full-page="true"/>
     <Header :hide="true" />
-    <div class="container-publicacao" :class="{'not-preview' : mobile && !imagem?.preview}">
+    <div class="container-publicacao" :class="{'not-preview' : mobile && !imagem?.preview}" v-if="!loading">
         <HeaderAcoes :showLeft="mobile" :showRight="imagem?.preview" :rightLabel="getAcaoLabel" :title="getTitle"
             @acoesCallback="avancar ? compartilhar() : doAvancar()" />
 
