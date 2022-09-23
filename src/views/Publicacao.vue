@@ -27,6 +27,7 @@ export default defineComponent({
         }
     },
     methods: {
+
         abrirSeletor() {
             const input = this.$refs.referenciaInput! as HTMLAnchorElement;
             input.click();
@@ -34,16 +35,16 @@ export default defineComponent({
         selecionarImagem(event: any) {
             if (event?.target?.files && event?.target?.files.length > 0) {
                 const arquivo = event?.target?.files[0];
-                this.obterPreviewImagem(arquivo);
+                this.obterImagemPreview(arquivo);
             }
         },
-        dropImage(event: any) {
+        dropImagem(event: any) {
             if (event?.dataTransfer?.files && event?.dataTransfer?.files.length > 0) {
                 const arquivo = event?.dataTransfer?.files[0];
-                this.obterPreviewImagem(arquivo);
+                this.obterImagemPreview(arquivo);
             }
         },
-        obterPreviewImagem(arquivo: any) {
+        obterImagemPreview(arquivo: any) {
             const fileReader = new FileReader();
             fileReader.readAsDataURL(arquivo);
             fileReader.onloadend = () => {
@@ -58,7 +59,7 @@ export default defineComponent({
         doAvancar(){
             this.avancar = true;
         },
-        async publicar(){
+        async compartilhar(){
 
         }
     }
@@ -66,12 +67,11 @@ export default defineComponent({
 </script>
 <template>
     <Header :hide="true" />
-    <div class="container-publicacao" :class="{'not-preview': !imagem?.preview}">
-        <HeaderAcoes :showLeft="mobile" :showRight="imagem?.preview" 
-            :rightLabel="getAcaoLabel" :title="getTitle" 
-            @acoesCallback="avancar ? publicar() : doAvancar()"/>
+    <div class="container-publicacao" :class="{'not-preview' : mobile && !imagem?.preview}">
+        <HeaderAcoes :showLeft="mobile" :showRight="imagem?.preview" :rightLabel="getAcaoLabel" :title="getTitle" 
+            @acoesCallback="avancar ? compartilhar() : doAvancar()"/>
 
-        <div class="form" v-if="!imagem?.preview" @dragover.prevent @drop.prevent="dropImage">
+        <div class="form" v-if="!imagem?.preview" @dragover.prevent @drop.prevent="dropImagem">
             <img src="../assets/imagens/selecionar-imagem.svg" alt="selecionar imagem" />
             <span>Arraste sua foto aqui!</span>
             <button @click="abrirSeletor">{{getButtonText}}</button>

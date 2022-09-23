@@ -4,7 +4,6 @@
     position: fixed;
     top: 0;
     width: 100%;
-    
     background-color: white;
     display: flex;
     flex-direction: column;
@@ -12,7 +11,7 @@
     justify-content: center;
 
     &.not-preview{
-        height: 80%;
+        height: 100%;
     }
 
     .container-acoes{
@@ -44,14 +43,14 @@
     }
 
     img{
-        padding: 20px 0;
-        object-fit: contain;
+        padding: 20px 0px;
     }
 
     @media screen and (min-width: $desktopBreakpoint) {
         width: 40%;
         margin-top: 110px;
-        
+        height: 80%;
+
         .form{
             img{
                 width: 80px;
@@ -68,6 +67,11 @@
                 width: 374px;
                 font-size: 16px;
             }
+        }
+
+        img{
+            height: 100%;
+            object-fit: cover;
         }
     }
 }
