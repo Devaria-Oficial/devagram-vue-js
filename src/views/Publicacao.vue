@@ -4,6 +4,10 @@ import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import HeaderAcoes from '../components/HeaderAcoes.vue';
 import Avatar from '../components/Avatar.vue';
+import {PublicacaoServices} from '../services/PublicacaoServices';
+import router from '@/router';
+
+const publicacaoServices = new PublicacaoServices();
 
 export default defineComponent({
     components: { Header, Footer, HeaderAcoes, Avatar },
@@ -56,11 +60,33 @@ export default defineComponent({
                 this.imagem = imagemFinal;
             }
         },
-        doAvancar(){
+        doAvancar() {
             this.avancar = true;
         },
-        async compartilhar(){
+        async compartilhar() {
+            try {
+                if (!this.descricao && this.imagem.arquivo) {
+                    return;
+                }
 
+                const requisicaoBody = new FormData();
+                if (this.descricao) {
+                    requisicaoBody.append('descricao', this.descricao);
+                }
+
+                if (this.imagem.arquivo) {
+                    requisicaoBody.append('file', this.imagem.arquivo);
+                }
+
+                await publicacaoServices.publicar(requisicaoBody);
+                return router.push({name : 'home'});
+            } catch (e: any) {
+                if (e?.response?.data?.erro) {
+                    console.log(e?.response?.data?.erro);
+                } else {
+                    console.log('Não foi possível efetuar a alteração:', e);
+                }
+            }
         }
     }
 });
@@ -68,8 +94,8 @@ export default defineComponent({
 <template>
     <Header :hide="true" />
     <div class="container-publicacao" :class="{'not-preview' : mobile && !imagem?.preview}">
-        <HeaderAcoes :showLeft="mobile" :showRight="imagem?.preview" :rightLabel="getAcaoLabel" :title="getTitle" 
-            @acoesCallback="avancar ? compartilhar() : doAvancar()"/>
+        <HeaderAcoes :showLeft="mobile" :showRight="imagem?.preview" :rightLabel="getAcaoLabel" :title="getTitle"
+            @acoesCallback="avancar ? compartilhar() : doAvancar()" />
 
         <div class="form" v-if="!imagem?.preview" @dragover.prevent @drop.prevent="dropImagem">
             <img src="../assets/imagens/selecionar-imagem.svg" alt="selecionar imagem" />
@@ -79,9 +105,16 @@ export default defineComponent({
         </div>
 
         <img :src="imagem.preview" v-if="imagem.preview && !avancar" />
+
+        <div class="concluir" v-if="avancar">
+            <img :src="imagem.preview" />
+            <textarea v-model="descricao" placeholder="Escreva uma legenda" />
+        </div>
     </div>
     <Footer />
 </template>
+
+
 
 
 
