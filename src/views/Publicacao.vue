@@ -20,14 +20,13 @@ export default defineComponent({
             return this.mobile ? "Nova Publicação" : "Criar nova publicação"
         },
         getAcaoLabel() {
-            return this.avancar ? "Concluir" : "Avançar"
+            return this.avancar ? "Compartilhar" : "Avançar"
         },
-        getButtonText(){
+        getButtonText() {
             return this.mobile ? "Selecionar foto" : "Selecionar do computador"
         }
     },
     methods: {
-
         abrirSeletor() {
             const input = this.$refs.referenciaInput! as HTMLAnchorElement;
             input.click();
@@ -35,35 +34,56 @@ export default defineComponent({
         selecionarImagem(event: any) {
             if (event?.target?.files && event?.target?.files.length > 0) {
                 const arquivo = event?.target?.files[0];
-                const fileReader = new FileReader();
-                fileReader.readAsDataURL(arquivo);
-                fileReader.onloadend = () => {
-                    const imagemFinal = {
-                        preview: fileReader.result,
-                        arquivo
-                    }
-
-                    this.imagem = imagemFinal;
-                }
+                this.obterPreviewImagem(arquivo);
             }
         },
+        dropImage(event: any) {
+            if (event?.dataTransfer?.files && event?.dataTransfer?.files.length > 0) {
+                const arquivo = event?.dataTransfer?.files[0];
+                this.obterPreviewImagem(arquivo);
+            }
+        },
+        obterPreviewImagem(arquivo: any) {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(arquivo);
+            fileReader.onloadend = () => {
+                const imagemFinal = {
+                    preview: fileReader.result,
+                    arquivo
+                }
+
+                this.imagem = imagemFinal;
+            }
+        },
+        doAvancar(){
+            this.avancar = true;
+        },
+        async publicar(){
+
+        }
     }
 });
 </script>
 <template>
     <Header :hide="true" />
-    <div class="container-publicacao">
-        <HeaderAcoes :showLeft="mobile" :showRight="imagem?.preview" :rightLabel="getAcaoLabel" :title="getTitle" />
+    <div class="container-publicacao" :class="{'not-preview': !imagem?.preview}">
+        <HeaderAcoes :showLeft="mobile" :showRight="imagem?.preview" 
+            :rightLabel="getAcaoLabel" :title="getTitle" 
+            @acoesCallback="avancar ? publicar() : doAvancar()"/>
 
-        <div class="form" v-if="!imagem?.preview">
-            <img src="../assets/imagens/selecionar-imagem.svg" alt="selecionar imagem"/>
+        <div class="form" v-if="!imagem?.preview" @dragover.prevent @drop.prevent="dropImage">
+            <img src="../assets/imagens/selecionar-imagem.svg" alt="selecionar imagem" />
             <span>Arraste sua foto aqui!</span>
             <button @click="abrirSeletor">{{getButtonText}}</button>
-            <input type="file" class="oculto" accept="image/*" ref="referenciaInput"/>
+            <input type="file" class="oculto" accept="image/*" ref="referenciaInput" @input="selecionarImagem" />
         </div>
+
+        <img :src="imagem.preview" v-if="imagem.preview && !avancar" />
     </div>
     <Footer />
 </template>
+
+
 
 
 
